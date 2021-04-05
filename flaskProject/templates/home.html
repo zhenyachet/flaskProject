@@ -1,0 +1,102 @@
+{% extends "layout.html" %}
+{% block content %}
+
+
+
+{% if current_user.is_authenticated %}
+<button type="button" class="btn btn-primary btn-lg btn-block" style="margin-bottom:10px" data-toggle="modal"
+data-target="#ExpenseModalForm">Add expense</button>
+    <h1>Last expenses</h1>
+{% else %}
+    <div class="starter-template">
+        <h1>Welcome! Please login</h1>
+    </div>
+{% endif %}
+
+
+<div class="modal fade" id="ExpenseModalForm" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add Expense</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form action="/" id="quickExpense" method="post" autocomplete="off">
+                    <input type="hidden" name="csrf_token">
+                    <div class="form-group">
+                        <label for="description" class="col-form-label">Description:</label>
+                        <input type="text" class="form-control" name="description" id="description" value="" form="quickExpense" maxlength="200" required="">
+                    </div>
+                    <div class="form-group">
+                        <label for="category" class="col-form-label">Category:</label>
+                        <select id="category" class="form-control-sm" name="category" form="quickExpense" required="">
+
+                            <option value="Groceries">Groceries</option>
+
+                            <option value="Housing">Housing</option>
+
+                            <option value="Utilities">Utilities</option>
+
+                            <option value="Dining Out">Dining Out</option>
+
+                            <option value="Shopping">Shopping</option>
+
+                            <option value="Travel">Travel</option>
+
+                            <option value="Entertainment">Entertainment</option>
+
+                            <option value="Other">Other</option>
+
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="date" class="col-form-label">Date:</label>
+                        <input type="date" class="form-control" name="date" id="date" value="2021-04-05" form="quickExpense">
+                    </div>
+                    <div class="form-group">
+                        <label for="time" class="col-form-label">Time:</label>
+                        <input type="time" class="form-control" name="time" id="time" value="" form="quickExpense">
+                    </div>
+                    <div class="form-group">
+                        <label for="ammount" class="col-form-label">Ammount:</label>
+                        <input type="text" class="form-control-sm" name="amount" id="amount" value="" size="10" placeholder="Kč" required="" maxlength="10" pattern="(?=.*?\d)^(([1-9]\d{0,2}(\d{3})*)|\d+)?(\.\d{1,2})?$" title="Format must be currency value without currency sign or commas e.g. 1, 2.50, 1500.75" form="quickExpense">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-success" form="quickExpense">Save Expense</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+    {% if current_user.is_authenticated %}
+        <table class="table">
+          <thead>
+            <tr>
+              <th scope="col">Category</th>
+              <th scope="col">Date</th>
+              <th scope="col">Time</th>
+              <th scope="col">Amount</th>
+            </tr>
+          </thead>
+          <tbody>
+          {% for expense in expenses %}
+            <tr>
+              <td> <a href="{{ url_for('expense', expense_id=expense.id) }}">{{ expense.category }}</a></td>
+              <td>{{ expense.date_expense.date() }}</td>
+              <td>{{ expense.date_expense.time().isoformat(timespec='minutes') }}</td>
+              <td>{{ expense.amount }}Kč</td>
+            </tr>
+             {% endfor %}
+    {% endif %}
+
+
+
+ </tbody>
+</table>
+{% endblock content %}

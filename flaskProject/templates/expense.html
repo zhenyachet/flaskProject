@@ -1,0 +1,24 @@
+{% extends "layout.html" %}
+{% block content %}
+    {% if current_user.is_authenticated %}
+        <table class="table">
+          <thead>
+            <tr>
+              <th scope="col">Category</th>
+              <th scope="col">Date</th>
+              <th scope="col">Time</th>
+              <th scope="col">Amount</th>
+              <th scope="col">description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>{{ expense.category }}</td>
+              <td>{{ expense.date_expense.date() }}</td>
+              <td>{{ expense.date_expense.time().isoformat(timespec='minutes') }}</td>
+              <td>{{ expense.amount }}Kč</td>
+              <td>{{ expense.description }}</td>
+            </tr>
+    {% endif %}
+
+{% endblock content %}
