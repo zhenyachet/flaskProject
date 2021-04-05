@@ -1,6 +1,7 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, TextAreaField, SelectField, DateTimeField, FloatField
 from wtforms.validators import DataRequired, Email, InputRequired
+from wtforms.fields.html5 import DateField, TimeField
 
 
 class LoginForm(FlaskForm):
@@ -16,6 +17,7 @@ class PostExpense(FlaskForm):
     category = SelectField('Category',
                            choices=[('text', 'Groceries'), ('text', 'Utilities'), ('text', 'Housing')],
                            validators=[DataRequired()])
-    datetime = DateTimeField('Date')
-    ammount = FloatField('Amount', validators=[DataRequired()])
+    datetime = DateField('Date')
+    time = TimeField('Time')
+    amount = FloatField('Amount', validators=[DataRequired()])
     submit = SubmitField('Add')
