@@ -2,6 +2,7 @@
 test project on flask
 
 Run it locally
+
 Create a directory and clone the repo in it:
 git clone https://github.com/zhenyachet/flaskProject.git
 

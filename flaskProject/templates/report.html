@@ -1,0 +1,31 @@
+{% extends 'layout.html' %}
+{% block content %}
+<div class="ct-chart ct-perfect-fourth"></div>
+<script>
+    class Mycharts{
+        constructor(Xdata, Ydata) {
+            this.Xdata = Xdata
+            this.Ydata = Ydata
+        }
+
+        createGraph()
+        {
+            var data =
+                {
+                  labels: this.Xdata,
+                  series: [
+                        this.Ydata
+                    ]
+                }
+            new Chartist.Bar('.ct-chart', data);
+        };
+    }
+
+    var Xdata = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
+    var Ydata = [5, 2, 4, 2, 0];
+
+    var obj = new Mycharts(Xdata, Ydata);
+    obj.createGraph()
+</script>
+
+{% endblock %}

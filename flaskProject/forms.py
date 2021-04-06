@@ -15,7 +15,7 @@ class LoginForm(FlaskForm):
 class PostExpense(FlaskForm):
     description = TextAreaField('Description', validators=[DataRequired()])
     category = SelectField('Category',
-                           choices=[('text', 'Groceries'), ('text', 'Utilities'), ('text', 'Housing')],
+                           choices=[('Groceries', 'Groceries'), ('Utilities', 'Utilities'), ('Housing', 'Housing')],
                            validators=[DataRequired()])
     datetime = DateField('Date')
     time = TimeField('Time')

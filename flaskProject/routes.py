@@ -1,8 +1,15 @@
-from flaskProject import app
+from flaskProject import app, db
 from flask import render_template, flash, redirect, url_for, request, abort
 from flaskProject.forms import LoginForm, PostExpense
 from flask_login import login_user, current_user, logout_user, login_required
 from flaskProject.models import User, Expense
+import datetime, json
+
+
+def format_date():
+    date_time_str = f"{request.form.get('date')} {request.form.get('time')}:00.000000"
+    date_time_obj = datetime.datetime.strptime(date_time_str, '%Y-%m-%d %H:%M:%S.%f')
+    return date_time_obj
 
 
 @app.route('/')
@@ -57,10 +64,25 @@ def account():
 @login_required
 def new_expense():
     form = PostExpense()
+
     if form.validate_on_submit():
-        flash('Your post has been created!', 'success')
+        expense1 = Expense(description=form.description.data,
+                           category=form.category.data,
+                           amount=float(request.form.get('amount')),
+                           date_expense=format_date(),
+                           user=current_user)
+        db.session.add(expense1)
+        db.session.commit()
+        flash('Your expense has been added', 'success')
         return redirect(url_for('home'))
-    return render_template('create_expense.html', title='New expense', form=form)
+
+    return render_template('create_expense.html',
+                           title='New expense',
+                           date='',
+                           time='',
+                           amount='',
+                           legend='New expense',
+                           form=form)
 
 
 @app.route('/expense/<int:expense_id>')
@@ -69,9 +91,57 @@ def expense(expense_id):
     return render_template('expense.html', title=expense.id, expense=expense)
 
 
-@app.route('/expense/<int:expense_id>/update')
+@app.route('/expense/<int:expense_id>/update', methods=['GET', 'POST'])
 @login_required
 def expense_update(expense_id):
     expense = Expense.query.get_or_404(expense_id)
+
     if expense.user != current_user:
         abort(403)
+    form = PostExpense()
+    if form.validate_on_submit():
+        expense.description = form.description.data
+        expense.category = form.category.data
+        expense.date_expense = format_date()
+        expense.amount = float(request.form.get('amount'))
+        db.session.commit()
+        flash('Your expense has been updated!', 'success')
+        return redirect(url_for('expense', expense_id=expense.id))
+    elif request.method == 'GET':
+        form.description.data = expense.description
+        form.category.data = expense.category
+        date = expense.date_expense.date()
+        time = datetime.datetime.strftime(expense.date_expense, "%H:%M")
+        amount = expense.amount
+    return render_template('create_expense.html',
+                           title='New expense',
+                           legend='Edit expense',
+                           date=date,
+                           time=time,
+                           amount=amount,
+                           form=form)
+
+
+@app.route('/expense/<int:expense_id>/delete', methods=['POST'])
+@login_required
+def delete_expense(expense_id):
+    expense = Expense.query.get_or_404(expense_id)
+    if expense.user != current_user:
+        abort(403)
+    db.session.delete(expense)
+    db.session.commit()
+    flash('Your expense has been deleted!', 'success')
+    return redirect(url_for('home'))
+
+
+@app.route('/report/')
+@login_required
+def get_report():
+    if current_user.is_authenticated:
+        user = User.query.filter_by(email=current_user.email).first()
+        expenses = user.expenses
+        print(expenses)
+        print(type(expenses))
+        return render_template('report.html', expenses=expenses)
+    else:
+        return render_template('report.html')
