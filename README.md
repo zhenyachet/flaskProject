@@ -17,3 +17,7 @@ pip install -r requirements.txt
 
 Run athe app with command python run.py
 Open the browser and add to the route: http://127.0.0.1:5000/
+
+Login with this credentials:
+Email: admin@example.com
+Password: password
